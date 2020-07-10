@@ -7,14 +7,16 @@ from selenium.webdriver.common.keys import Keys
 
 
 def main():
-    driver = webdriver.Chrome(executable_path=r"C:\Users\mark-\PycharmProjects\chromedriver.exe")
+    driver = webdriver.Chrome(
+        executable_path=r"C:\Users\mark-\PycharmProjects\chromedriver.exe")
     driver.get('https://baza.drom.ru/user/CarZilla/')
     id = 160890783
 
     # def getPostLinks():
     print('пролистывание до конца')
     for r in range(10):
-        driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+        driver.execute_script(
+            "window.scrollTo(0, document.body.scrollHeight);")
         time.sleep(2)
     print('Пролистывание закончено')
     links = []
@@ -25,12 +27,13 @@ def main():
     for items in links:
         f.write(items + '\n')
     f.close()
-    price=[]
+    price = []
     # def GetInfoFromPage():
     for link in links:
         driver.get(link)
         time.sleep(2)
-        pp = driver.find_element_by_xpath('//*[@id="fieldsetView"]/div/div[1]/div/div[1]/span')
+        pp = driver.find_element_by_xpath(
+            '//*[@id="fieldsetView"]/div/div[1]/div/div[1]/span')
         price.append(pp.text)
 
 
@@ -60,7 +63,8 @@ def photo():
         crop = y
     else:
         crop = x
-    vk.photos.getMarketUploadServer(group_id=id, main_photo=1, crop_x=crop, crop_y=crop, crop_width=crop)
+    vk.photos.getMarketUploadServer(group_id=id, main_photo=1, crop_x=crop,
+                                    crop_y=crop, crop_width=crop)
 
 
 ''' banned for now
@@ -70,8 +74,8 @@ def MarketPost():
 '''
 
 VkAuth()
-#getPostLinks()
-#GetInfoFromPage()
+# getPostLinks()
+# GetInfoFromPage()
 
 if __name__ == '__main__':
     main()
