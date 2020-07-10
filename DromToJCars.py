@@ -100,3 +100,8 @@ for link in links:
     soup.next_element(partnoF[0])
     images = soup.find_all(attrs={'class': 'bulletinImages'}) #фотографии
     driver.find_all(attrs={'class': 'bulletinText'})
+
+while True:
+    try:
+        driver.find_element_by_link_text('Следующая страница')
+pageCount
