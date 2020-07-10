@@ -2,13 +2,13 @@ import json, time, csv
 from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException
 
-path = "Drom" + time.strftime('%d%m%y') + ".csv"
+path = "result" + time.strftime('%d%m%y')
 links, data = [], []
 
 
 def csv_writer(data, path):
     with open(path, "w", newline='') as csv_file:
-        writer = csv.writer(csv_file, delimiter=',')
+        writer = csv.writer(csv_file, delimiter=';')
         for line in data:
             writer.writerow(line)
 
@@ -17,7 +17,9 @@ driver = webdriver.Chrome(
     executable_path=r"C:\Users\mark-\PycharmProjects\chromedriver.exe")
 driver.get('https://baza.drom.ru/user/CarZilla/')
 print('пролистывание до конца')
-for r in range(8):
+pages = int(driver.find_element_by_class_name(
+    'pageCount').text.replace('Всего ', '').replace(' страниц', ''))
+for r in pages:
     driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
     time.sleep(3)
 print('Пролистывание закончено')
@@ -39,30 +41,36 @@ for num, link in enumerate(links):
             driver.find_element_by_xpath(
                 '/html/body/div[1]/div/div[3]/div[2]/div/h2')
             input()
+            # ждем ответ от пользователя
             price = driver.find_element_by_xpath(
                 '//*[@id="fieldsetView"]/div/div[1]/div/div[1]/span')
             price = price.text.replace(' ', '')
         except NoSuchElementException:  # не капча? ну точно цены нема
             price = '0'
             print('нет цены')
+    #имя еще не забудем
+    name = driver.find_elements_by_class_name('inplace')[0].text
+    # ищем номера замен
+    '''try:
+        partsno = driver.find_element_by_class_name('oem-numbers__list').text+
+                  driver.find_element_by_class_name('autoPartsOemNumber')
+'''
     time.sleep(5)
     # объединяем данные
-    tup = ('\t', num + 1, link, int(price.replace('₽', '')))
+    tup = ('\t', num + 1,name, link, int(price.replace('₽', '')))
     data.append(tup)
     print(tup)
 
 # save data
-json.dump(data, open("Drom" +
-                     time.strftime('%d%m%y') + ".json", "w"))
+json.dump(data, open(path + ".json", "w"))
 # sorted data dump
 datamod = sorted(data, key=lambda adv: adv[3], reverse=True)
-json.dump(datamod, open("DromSortedByPrice" +
-                        time.strftime('%d%m%y') + ".json", "w"))
+json.dump(datamod, open(path+'_sorted_by_price' + ".json", "w"))
 # sorted data txt separated with tabs
-f = open("dromlistSortedByprice" + time.strftime('%d%m%y') + ".txt", "w")
+f = open(path+'_sorted'+ ".txt", "w")
 for num, item in enumerate(datamod):
     f.write(str(num + 1) + '\t' + str(item[1]) + '\t' + item[0] + '\n')
 f.close()
 
-csv_writer(datamod, path)
+csv_writer(datamod, path + ".csv")
 driver.close()
